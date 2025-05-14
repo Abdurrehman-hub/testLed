@@ -1,132 +1,91 @@
-const express = require("express");
-const axios = require("axios");
+const express = require('express');
+const axios = require('axios');
 const app = express();
 
-const WLED_URL = "http://192.168.8.141/json/state";
+const WLED_IP = 'http://192.168.8.141/json/state';
 
-function sendToWLED(payload, effectName, res) {
-  axios
-    .post(WLED_URL, payload, {
-      headers: { "Content-Type": "application/json" },
-    })
-    .then((response) => {
-      res.send(`${effectName} sent. Status: ${response.status}`);
-    })
-    .catch((error) => {
-      res.send(`Error: ${error.message}`);
+// Function to send payload
+async function sendToWled(payload, effectName) {
+  try {
+    const res = await axios.post(WLED_IP, payload, {
+      headers: { 'Content-Type': 'application/json' }
     });
+    return `${effectName} sent successfully. Status: ${res.status}`;
+  } catch (error) {
+    return `Error sending ${effectName}: ${error.message}`;
+  }
 }
 
-// 🔷 Overlay Chase (/click)
-app.get("/click", (req, res) => {
+// 🔷 Overlay Chase
+app.get('/click', async (req, res) => {
   const payload = {
     on: true,
     bri: 50,
     mainseg: 0,
     seg: [
-      {
-        id: 0, start: 0, stop: 300,
-        col: [[0, 0, 255], [255, 69, 0]],
-        fx: 47, sx: 255, ix: 255,
-      },
-      {
-        id: 1, start: 300, stop: 600,
-        col: [[0, 0, 255], [255, 69, 0]],
-        fx: 47, sx: 255, ix: 255,
-      },
-    ],
+      { id: 0, start: 0, stop: 300, col: [[0, 0, 255], [255, 69, 0]], fx: 47, sx: 255, ix: 255 },
+      { id: 1, start: 300, stop: 600, col: [[0, 0, 255], [255, 69, 0]], fx: 47, sx: 255, ix: 255 }
+    ]
   };
-  sendToWLED(payload, "Overlay Chase", res);
+  res.send(await sendToWled(payload, "Overlay Chase"));
 });
 
-// 🟧 Solid Orange (/home)
-app.get("/home", (req, res) => {
+// 🟧 Solid Orange
+app.get('/home', async (req, res) => {
   const payload = {
     on: true,
     bri: 50,
     mainseg: 0,
     seg: [
-      {
-        id: 0, start: 0, stop: 300,
-        col: [[255, 69, 0]],
-        fx: 0,
-      },
-      {
-        id: 1, start: 300, stop: 600,
-        col: [[255, 69, 0]],
-        fx: 0,
-      },
-    ],
+      { id: 0, start: 0, stop: 300, col: [[255, 69, 0]], fx: 0 },
+      { id: 1, start: 300, stop: 600, col: [[255, 69, 0]], fx: 0 }
+    ]
   };
-  sendToWLED(payload, "Solid Orange", res);
+  res.send(await sendToWled(payload, "Solid Orange"));
 });
 
-// 🔵 Blink Blue (/win)
-app.get("/win", (req, res) => {
+// 🔵 Blink Blue
+app.get('/win', async (req, res) => {
   const payload = {
     on: true,
     bri: 50,
     mainseg: 0,
     seg: [
-      {
-        id: 0, start: 0, stop: 300,
-        col: [[0, 0, 255]],
-        fx: 1, sx: 240, ix: 120,
-      },
-      {
-        id: 1, start: 300, stop: 600,
-        col: [[0, 0, 255]],
-        fx: 1, sx: 240, ix: 120,
-      },
-    ],
+      { id: 0, start: 0, stop: 300, col: [[0, 0, 255]], fx: 1, sx: 240, ix: 120 },
+      { id: 1, start: 300, stop: 600, col: [[0, 0, 255]], fx: 1, sx: 240, ix: 120 }
+    ]
   };
-  sendToWLED(payload, "Blink Blue", res);
+  res.send(await sendToWled(payload, "Blink Blue"));
 });
 
-// 🔴 Fade Red (/lose)
-app.get("/lose", (req, res) => {
+// 🔴 Fade Red
+app.get('/lose', async (req, res) => {
   const payload = {
     on: true,
     bri: 50,
     mainseg: 0,
     seg: [
-      {
-        id: 0, start: 0, stop: 300,
-        col: [[255, 0, 0]],
-        fx: 56, sx: 255, ix: 255,
-      },
-      {
-        id: 1, start: 300, stop: 600,
-        col: [[255, 0, 0]],
-        fx: 56, sx: 255, ix: 255,
-      },
-    ],
+      { id: 0, start: 0, stop: 300, col: [[255, 0, 0]], fx: 56, sx: 255, ix: 255 },
+      { id: 1, start: 300, stop: 600, col: [[255, 0, 0]], fx: 56, sx: 255, ix: 255 }
+    ]
   };
-  sendToWLED(payload, "Fade Red", res);
+  res.send(await sendToWled(payload, "Fade Red"));
 });
 
-// 🌀 Loading Overlay (/load)
-app.get("/load", (req, res) => {
+// 🌀 Loading Effect
+app.get('/load', async (req, res) => {
   const payload = {
     on: true,
     bri: 50,
     mainseg: 0,
     seg: [
-      {
-        id: 0, start: 0, stop: 300,
-        col: [[0, 0, 255], [255, 69, 0]],
-        fx: 47, sx: 30, ix: 255,
-      },
-      {
-        id: 1, start: 300, stop: 600,
-        col: [[0, 0, 255], [255, 69, 0]],
-        fx: 47, sx: 30, ix: 255,
-      },
-    ],
+      { id: 0, start: 0, stop: 300, col: [[0, 0, 255], [255, 69, 0]], fx: 47, sx: 30, ix: 255 },
+      { id: 1, start: 300, stop: 600, col: [[0, 0, 255], [255, 69, 0]], fx: 47, sx: 30, ix: 255 }
+    ]
   };
-  sendToWLED(payload, "Loading Effect", res);
+  res.send(await sendToWled(payload, "Loading Effect"));
 });
 
-app.listen(5000, () => {
-  console.log("WLED server running on http://localhost:5000");
-});
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
