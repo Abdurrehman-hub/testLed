@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 
-const WLED_IP = 'http://192.168.8.141/json/state';
+const WLED_IP = 'http://192.168.8.141/json/state'; // Replace with your actual WLED IP
 
 // Function to send payload
 async function sendToWled(payload, effectName) {
@@ -86,6 +86,14 @@ app.get('/load', async (req, res) => {
   res.send(await sendToWled(payload, "Loading Effect"));
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
+// Optional: Power Off Endpoint
+app.get('/off', async (req, res) => {
+  const payload = {
+    on: false
+  };
+  res.send(await sendToWled(payload, "Power Off"));
+});
+
+// Start server — use Render's dynamic port
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
